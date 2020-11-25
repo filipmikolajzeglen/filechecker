@@ -1,11 +1,9 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.*;
 
 public class Checker {
-
+    private static String applog = "app.log";
     private static Properties settings = null;
 
     private static String env(String variable) {
@@ -20,35 +18,35 @@ public class Checker {
         return settings.getProperty(variable);
     }
 
-    private Map<String, Integer> mapErrors() {
-        Map<String, Integer> error = new HashMap<String, Integer>();
-        error.put("\"111\"", 0);
-        error.put("\"101\"", 0);
-        error.put("\"102\"", 0);
-        error.put("\"150\"", 0);
-        error.put("\"140\"", 0);
-        error.put("\"120\"", 0);
+    private Map<String, String> mapOfErrors() {
+        Map<String, String> error = new HashMap<String, String>();
+        error.put("Exception:", "\t");
         return error;
     }
 
     void analyse() {
-        File logs = new File(env("APP") + "app.log");
-        Map<String, Integer> error = mapErrors();
+        BufferedReader reader = null;
+        Map<String, String> error = mapOfErrors();
 
-            error.forEach((k, v) -> {
-                Scanner scannedFile = null;
-                try {
-                    scannedFile = new Scanner(logs);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                while (scannedFile.hasNext()) {
-                    String search = scannedFile.next();
-                    if (search.contains(k)) {
-                            ++v;
+        try {
+            reader = new BufferedReader(new FileReader("C:\\Users\\fzegle23\\Desktop\\Logs\\plc027226\\" + applog));
+        } catch (FileNotFoundException e) {
+            System.out.println("Plik \"" + applog + "\" nie istnieje!\t");
+        }
+            try {
+                String line = reader.readLine();
+                while (line != null) {
+                    for (Map.Entry<String, String> entry : error.entrySet()) {
+                        String k = entry.getKey();
+                        String v = entry.getValue();
+                        if (!line.startsWith(v) && line.contains(k)) {
+                            System.out.println(k + "\t" + line);
+                        }
                     }
+                    line = reader.readLine();
                 }
-                System.out.println("Error " + k + " Sum: " + v);
-            });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
     }
 }
