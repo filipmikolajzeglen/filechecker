@@ -12,7 +12,7 @@ public class Checker {
         if (settings == null) {
             settings = new Properties();
             try {
-                settings.load(new FileInputStream("C:/Users/fzegle23/Desktop/Logs/settings.config"));
+                settings.load(new FileInputStream("settings.config"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -32,7 +32,7 @@ public class Checker {
     }
 
     void analyse() {
-        File logs = new File(env("APP_LOG") + "app.log");
+        File logs = new File(env("APP") + "app.log");
         Map<String, Integer> error = mapErrors();
 
             error.forEach((k, v) -> {
